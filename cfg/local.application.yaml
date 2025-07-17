@@ -1,0 +1,11 @@
+dataSource:
+  type: mongo
+  url: "mongodb://localhost:27017/myFirstMongDb"
+  schema: myFirstMongDb
+  port: 27017
+
+log:
+  level: "info"
+  size: 10
+  backups: 5
+  path: "log/app.log"
