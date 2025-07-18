@@ -24,4 +24,5 @@ type logConf struct {
 	Path    string `yaml:"path" json:"path"`
 	Size    int    `yaml:"size" json:"size"`
 	Backups int    `yaml:"backups" json:"backups"`
+	Age     int    `yaml:"age" json:"age"`
 }
