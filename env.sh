@@ -1,0 +1,1 @@
+export SERVICE_ACTIVE_PROFILE=production

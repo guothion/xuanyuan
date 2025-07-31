@@ -1,11 +1,18 @@
 dataSource:
-  type: mongo
-  url: "mongodb://localhost:27017/myFirstMongDb"
-  schema: myFirstMongDb
-  port: 27017
+#  type: mongo
+#  url: "mongodb://localhost:27017/myFirstMongDb"
+#  schema: myFirstMongDb
+#  port: 27017
+
+  type: mysql
+  host: "localhost"
+  port: 3306
+  username: root
+  password: 12345678
 
 log:
   level: "info"
   size: 10
   backups: 5
   path: "log/app.log"
+  age: 7

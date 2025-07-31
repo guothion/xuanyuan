@@ -1,75 +1,80 @@
 package api
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"github.com/guothion/xuanyuan/pkg/api/controller"
+	"github.com/guothion/xuanyuan/pkg/api/middleware"
+	"github.com/sirupsen/logrus"
+	"net/http"
+	"os"
+	"strings"
 )
 
-var db = make(map[string]string)
+func Server() {
+	profile := strings.ToLower(os.Getenv("SERVICE_ACTIVE_PROFILE"))
+	// 设置模式
+	if profile != "production" {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
-func setupRouter() *gin.Engine {
-	// Disable Console Color
-	// gin.DisableConsoleColor()
-	r := gin.Default()
+	go func() {
+		engine := gin.New()
+		engine.Use(gin.Recovery())
+		setupAdminAPIs(engine)
 
-	// Ping test
-	r.GET("/ping", func(c *gin.Context) {
-
-		c.String(http.StatusOK, "pong")
-	})
-
-	// Get user value
-	r.GET("/user/:name", func(c *gin.Context) {
-		user := c.Params.ByName("name")
-		value, ok := db[user]
-		if ok {
-			c.JSON(http.StatusOK, gin.H{"user": user, "value": value})
-		} else {
-			c.JSON(http.StatusOK, gin.H{"user": user, "status": "no value"})
+		addr := "localhost:8082"
+		logrus.Info(profile)
+		if profile != "production" {
+			addr = "localhost:14082"
 		}
-	})
-
-	// Authorized group (uses gin.BasicAuth() middleware)
-	// Same than:
-	// authorized := r.Group("/")
-	// authorized.Use(gin.BasicAuth(gin.Credentials{
-	//	  "foo":  "bar",
-	//	  "manu": "123",
-	//}))
-	authorized := r.Group("/", gin.BasicAuth(gin.Accounts{
-		"foo":  "bar", // user:foo password:bar
-		"manu": "123", // user:manu password:123
-	}))
-
-	/* example curl for /admin with basicauth header
-	   Zm9vOmJhcg== is base64("foo:bar")
-
-		curl -X POST \
-	  	http://localhost:8080/admin \
-	  	-H 'authorization: Basic Zm9vOmJhcg==' \
-	  	-H 'content-type: application/json' \
-	  	-d '{"value":"bar"}'
-	*/
-	authorized.POST("admin", func(c *gin.Context) {
-		user := c.MustGet(gin.AuthUserKey).(string)
-
-		// Parse JSON
-		var json struct {
-			Value string `json:"value" binding:"required"`
+		logrus.Printf("Admin server is listening on %s", addr)
+		if err := engine.Run(addr); err != nil {
+			logrus.Fatalf("launch admin server failed: %v", err)
 		}
+	}()
 
-		if c.Bind(&json) == nil {
-			db[user] = json.Value
-			c.JSON(http.StatusOK, gin.H{"status": "ok"})
-		}
-	})
+	engine := gin.New()
+	engine.Use(gin.Recovery())
+	engine.Use(corsMiddleware())
+	//engine.GET("/swagger/*any",)
+	setupAPIs(engine)
 
-	return r
+	addr := "localhost:8083"
+	if profile != "production" {
+		addr = "localhost:14083"
+	}
+	logrus.Printf("Admin server is listening on %s", addr)
+	if err := engine.Run(addr); err != nil {
+		logrus.Fatalf("launch admin server failed: %v", err)
+	}
 }
 
-func main() {
-	r := setupRouter()
-	// Listen and Server in 0.0.0.0:8080
-	r.Run(":8080")
+func setupAPIs(engine *gin.Engine) {
+	middleware.Init()
+
+	engine.POST("/login", middleware.LoginHandler)
+	controller.Init(engine)
+}
+
+func setupAdminAPIs(engine *gin.Engine) {
+	engine.GET("/envVars", controller.ShowEnvVars)
+	engine.GET("/configs", controller.ShowConfig)
+}
+
+func corsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, PATCH, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Fl-Service-Profile,X-Gl-Account")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusOK)
+			return
+		}
+
+		c.Next()
+	}
 }

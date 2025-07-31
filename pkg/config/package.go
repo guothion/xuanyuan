@@ -43,6 +43,8 @@ func loadConfig() {
 		panic(fmt.Errorf("unable to decode config: %s \n", err))
 	}
 
+	// we use lock to read the config,because we use goroutine to open multi-thread
+	// for prevent data race we locked it.
 	configLock.Lock()
 	defer configLock.Unlock()
 	Config = tempConfig
