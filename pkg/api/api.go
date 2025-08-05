@@ -24,7 +24,7 @@ func Server() {
 		engine.Use(gin.Recovery())
 		setupAdminAPIs(engine)
 
-		addr := "localhost:8082"
+		addr := "localhost:14080"
 		logrus.Info(profile)
 		if profile != "production" {
 			addr = "localhost:14082"
@@ -41,7 +41,7 @@ func Server() {
 	//engine.GET("/swagger/*any",)
 	setupAPIs(engine)
 
-	addr := "localhost:8083"
+	addr := "localhost:14081"
 	if profile != "production" {
 		addr = "localhost:14083"
 	}
@@ -53,7 +53,6 @@ func Server() {
 
 func setupAPIs(engine *gin.Engine) {
 	middleware.Init()
-
 	engine.POST("/login", middleware.LoginHandler)
 	controller.Init(engine)
 }

@@ -6,21 +6,25 @@ import (
 	"github.com/guothion/xuanyuan/pkg/common"
 	"github.com/guothion/xuanyuan/pkg/model"
 	"github.com/sirupsen/logrus"
+	"net/http"
 )
 
+// 这里我们给controller设置key
 func init() {
-
+	c := &UserController{}
+	controllers[c.BasePath()] = c
 }
 
 type UserController struct{}
 
-func (u *UserController) BasePath() string { return "/v1/user" }
+func (u *UserController) BasePath() string { return "/v1/userService" }
 
-func (u *UserController) ReginsterRouter(engine *gin.Engine) {
+func (u *UserController) RegisterRouter(engine *gin.Engine) {
 	routerGroup := engine.Group(u.BasePath())
 	routerGroup.Use(middleware.SessionRequireMiddleware)
-
 	routerGroup.GET("", u.List)
+
+	routerGroup.GET("/:name", u.UserName)
 }
 
 func (u *UserController) List(ctx *gin.Context) {
@@ -31,5 +35,11 @@ func (u *UserController) List(ctx *gin.Context) {
 	)
 
 	logrus.Println(context, result, err)
+	ctx.JSON(http.StatusOK, result)
+}
 
+func (u *UserController) UserName(ctx *gin.Context) {
+	name := ctx.Param("name")
+
+	ctx.String(http.StatusOK, "name="+name)
 }
