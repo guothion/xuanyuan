@@ -52,8 +52,8 @@ func Init() {
 	var err error
 
 	c := config.Config.DataSource
-	addr := fmt.Sprintf("%s:%s@tcp(%s:%d)?charset=utf8mb4&parseTime=True&loc=Local",
-		c.Username, c.Password, c.Host, c.Port)
+	addr := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		c.Username, c.Password, c.Host, c.Port, c.Schema)
 
 	newLogger := gormLogger.New(
 		syslog.New(os.Stdout, "\r\n", syslog.LstdFlags),
@@ -64,8 +64,7 @@ func Init() {
 			Colorful:                  true,
 		},
 	)
-
-	if conn, err = gorm.Open(mysql.Open(addr), &gorm.Config{Logger: newLogger}); err == nil {
+	if conn, err = gorm.Open(mysql.Open(addr), &gorm.Config{Logger: newLogger}); err != nil {
 		logrus.Fatalf("open mysql connection failed: %v", err)
 	}
 	verbose = c.Verbose

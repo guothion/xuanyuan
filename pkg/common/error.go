@@ -27,3 +27,27 @@ func NewForbiddenError(format string, args ...interface{}) *HTTPError {
 		Timestamp: util.Timestamp(),
 	}
 }
+
+func NewBadRequestError(format string, args ...interface{}) *HTTPError {
+	return &HTTPError{
+		Code:      http.StatusBadRequest,
+		Message:   fmt.Sprintf(format, args...),
+		Timestamp: util.Timestamp(),
+	}
+}
+
+func NewNotFoundError(format string, args ...interface{}) *HTTPError {
+	return &HTTPError{
+		Code:      http.StatusNotFound,
+		Message:   fmt.Sprintf(format, args...),
+		Timestamp: util.Timestamp(),
+	}
+}
+
+func NewInternalServerError(format string, args ...interface{}) *HTTPError {
+	return &HTTPError{
+		Code:      http.StatusInternalServerError,
+		Message:   fmt.Sprintf(format, args...),
+		Timestamp: util.Timestamp(),
+	}
+}

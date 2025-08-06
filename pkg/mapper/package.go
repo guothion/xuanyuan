@@ -1,3 +1,5 @@
 package mapper
 
-var ()
+var (
+	User = &userMapper{}
+)
