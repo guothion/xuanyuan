@@ -1,7 +1,8 @@
 package common
 
 var (
-	StatusOk = &Status{Code: 0, Message: "OK"}
+	StatusOk        = &Status{Code: 0, Message: "OK"}
+	StatusForbidden = &Status{Code: 0, Message: "Forbidden"}
 )
 
 type Status struct {

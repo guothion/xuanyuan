@@ -19,14 +19,14 @@ func setupRouter() *gin.Engine {
 		c.String(http.StatusOK, "pong")
 	})
 
-	// Get user value
+	// Get userService value
 	r.GET("/user/:name", func(c *gin.Context) {
 		user := c.Params.ByName("name")
 		value, ok := db[user]
 		if ok {
-			c.JSON(http.StatusOK, gin.H{"user": user, "value": value})
+			c.JSON(http.StatusOK, gin.H{"userService": user, "value": value})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"user": user, "status": "no value"})
+			c.JSON(http.StatusOK, gin.H{"userService": user, "status": "no value"})
 		}
 	})
 
@@ -38,8 +38,8 @@ func setupRouter() *gin.Engine {
 	//	  "manu": "123",
 	//}))
 	authorized := r.Group("/", gin.BasicAuth(gin.Accounts{
-		"foo":  "bar", // user:foo password:bar
-		"manu": "123", // user:manu password:123
+		"foo":  "bar", // userService:foo password:bar
+		"manu": "123", // userService:manu password:123
 	}))
 
 	/* example curl for /admin with basicauth header
