@@ -11,3 +11,7 @@ type userService struct{}
 func (us *userService) Create(ctx *common.Context, req *model.User) (err error) {
 	return mapper.User.Create(ctx, req)
 }
+
+func (us *userService) Update(ctx *common.Context, req *model.User) (err error) {
+	return mapper.User.Update(ctx, req)
+}

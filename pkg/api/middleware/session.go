@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/guothion/xuanyuan/pkg/bootstrap"
 	"github.com/guothion/xuanyuan/pkg/common"
 	"github.com/guothion/xuanyuan/pkg/config"
 	"net/http"
@@ -12,7 +11,7 @@ import (
 func SessionRequireMiddleware(ctx *gin.Context) {
 	account := ctx.GetHeader(config.KeyHeaderAccount)
 	accessToken := ctx.GetHeader(config.KeyHeaderAccessToken)
-	if err := bootstrap.Session.ValidateAccess(accessToken, account); err != nil {
+	if err := SessionInstance.ValidateAccess(accessToken, account); err != nil {
 		response := common.Status{
 			Code:    http.StatusForbidden,
 			Message: "invalid access token and account",

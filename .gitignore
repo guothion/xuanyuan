@@ -7,6 +7,6 @@
 *.iml
 *.ipr
 
-log/
+logs/
 vendor/
 bin/

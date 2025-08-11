@@ -1,8 +1,9 @@
-package common
+package bootstrap
 
 import (
 	"fmt"
-	"github.com/guothion/xuanyuan/pkg/config"
+	"github.com/guothion/xuanyuan/pkg/global"
+	"github.com/guothion/xuanyuan/pkg/util"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
@@ -21,15 +22,19 @@ var levelMap = map[string]logrus.Level{
 	"fatal": logrus.FatalLevel,
 }
 
-func initLogger() {
-	cfg := config.Config.Log
+func InitLogger() {
+	cfg := global.App.Config.Log
+
+	// 创建根目录
+	createRootDir()
 
 	rotateLogger := &lumberjack.Logger{
-		Filename:   cfg.Path,
+		Filename:   cfg.RootDir + "/" + cfg.Filename,
 		MaxSize:    cfg.Size,
 		MaxBackups: cfg.Backups,
 		LocalTime:  true,
 		MaxAge:     cfg.Age,
+		Compress:   cfg.Compress,
 	}
 	// MultiWriter 允许你将数据同时写入多个 io.Writer
 	ioWriter := io.MultiWriter(rotateLogger, os.Stdout)
@@ -41,6 +46,12 @@ func initLogger() {
 	// 设置等级
 	logrus.SetLevel(getLogLevel(cfg.Level))
 	return
+}
+
+func createRootDir() {
+	if ok, _ := util.PathExists(global.App.Config.Log.RootDir); !ok {
+		_ = os.Mkdir(global.App.Config.Log.RootDir, os.ModePerm)
+	}
 }
 
 // 这个最终返回 logrus 的相关对象

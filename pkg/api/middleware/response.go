@@ -19,6 +19,10 @@ func RespondCreated(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, common.StatusOk)
 }
 
+func RespondUpdated(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, common.StatusOk)
+}
+
 func RespondForbidden(ctx *gin.Context) {
 	ctx.JSON(http.StatusForbidden, common.StatusForbidden)
 }

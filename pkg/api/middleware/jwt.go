@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"errors"
+	"fmt"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
-	"github.com/guothion/xuanyuan/pkg/bootstrap"
 	"github.com/guothion/xuanyuan/pkg/util"
 	"github.com/sirupsen/logrus"
 	"time"
@@ -22,6 +22,32 @@ const (
 	JWTPropUserName = "name"
 )
 
+type LoginIdentity struct {
+	ID   interface{} // unit64 for MySQL or string for mongo
+	Name string
+}
+
+type sessionService struct{}
+
+// 这里我们定义了一个 String 方法，之后我们打印这个 LoginRequest 的时候直接就是返回这个
+func (r *LoginRequest) String() string {
+	return fmt.Sprintf("username: %s, password: %s", r.Username, r.Password)
+}
+
+func (s *sessionService) Login(req *LoginRequest) (result *LoginIdentity, err error) {
+	err = fmt.Errorf("sessionService.Login not implementated yet")
+	return
+}
+
+func (s *sessionService) ValidateAccess(accessToken, account string) (err error) { return }
+
+type LoginRequest struct {
+	Username string `form: "username" json:"username" binding:"omitempty"`
+	Password string `form: "password" json:"password" binding:"omitempty"`
+}
+
+var SessionInstance = &sessionService{}
+
 func createJWTMiddleware() (*jwt.GinJWTMiddleware, error) {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       AuthJWTRealm,
@@ -30,7 +56,7 @@ func createJWTMiddleware() (*jwt.GinJWTMiddleware, error) {
 		MaxRefresh:  time.Hour * 12,
 		IdentityKey: AuthJWTIdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			if v, ok := data.(*bootstrap.LoginIdentity); ok {
+			if v, ok := data.(*LoginIdentity); ok {
 				return jwt.MapClaims{
 					JWTPropUserID:   v.ID,
 					JWTPropUserName: v.Name,
@@ -43,12 +69,12 @@ func createJWTMiddleware() (*jwt.GinJWTMiddleware, error) {
 			return claims
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			var loginRequest bootstrap.LoginRequest
+			var loginRequest LoginRequest
 			if err := c.ShouldBind(&loginRequest); err != nil {
 				return "", jwt.ErrMissingLoginValues
 			}
 
-			loginIndentity, err := bootstrap.Session.Login(&loginRequest)
+			loginIndentity, err := SessionInstance.Login(&loginRequest)
 			if err != nil {
 				logrus.Errorf("Authenticate fail for: %v,error:%v", loginRequest, err)
 				return nil, err

@@ -10,23 +10,7 @@ import (
 	"net/http"
 )
 
-// 这里我们给controller设置key
-func init() {
-	c := &UserController{}
-	controllers[c.BasePath()] = c
-}
-
 type UserController struct{}
-
-func (u *UserController) BasePath() string { return "/v1/user" }
-
-func (u *UserController) RegisterRouter(engine *gin.Engine) {
-	routerGroup := engine.Group(u.BasePath())
-	routerGroup.Use(middleware.SessionRequireMiddleware)
-	routerGroup.GET("", u.List)
-
-	routerGroup.POST("/create", u.Create)
-}
 
 func (u *UserController) List(ctx *gin.Context) {
 	var (
@@ -64,4 +48,28 @@ func (u *UserController) Create(ctx *gin.Context) {
 	}
 
 	middleware.RespondCreated(ctx)
+}
+
+func (u *UserController) Update(ctx *gin.Context) {
+	var (
+		context *common.Context
+		req     model.User
+		err     error
+	)
+	if context, err = parseContext(ctx); err != nil {
+		middleware.RespondForbidden(ctx)
+		return
+	}
+	defer context.Cancel()
+
+	if err = ctx.ShouldBindJSON(&req); err != nil {
+		middleware.RespondBadRequest(ctx, err)
+		return
+	}
+
+	if err = userService.UserService.Update(context, &req); err != nil {
+		middleware.RespondFailure(ctx, err)
+		return
+	}
+	middleware.RespondUpdated(ctx)
 }

@@ -63,9 +63,10 @@ CREATE TABLE IF NOT EXISTS users (
      username VARCHAR(50) NOT NULL  UNIQUE  COMMENT '用户名',
      email VARCHAR(100) UNIQUE COMMENT '邮箱',
      password_hash VARCHAR(255) NOT NULL COMMENT '密码哈希',
-     role ENUM('userService','editor','admin') DEFAULT 'userService' COMMENT '角色',
+     role int NOT NULL DEFAULT 2 COMMENT '权限',
      created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-     updated_at  DATETIME  DEFAULT  CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+     updated_at  DATETIME  DEFAULT  CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+     deleted_at DATETIME DEFAULT NULL COMMENT '删除时间'
 );
 # 收藏表
 CREATE TABLE IF NOT EXISTS favorites (
