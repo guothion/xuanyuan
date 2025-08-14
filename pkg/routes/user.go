@@ -16,11 +16,13 @@ type UserRoute struct{}
 func (u *UserRoute) BasePath() string { return "/user" }
 
 func (u *UserRoute) RegisterRouter(router *gin.RouterGroup) {
-	UserController := new(controller.UserController)
+	userController := new(controller.UserController)
 	userRouter := router.Group(u.BasePath()).
 		Use(middleware.SessionRequireMiddleware)
 	{
-		// 创建用户接口
-		userRouter.POST("/create", UserController.Create)
+		// 注册
+		userRouter.POST("/register", userController.Register)
+		// 登录
+		userRouter.POST("/login", userController.Login)
 	}
 }

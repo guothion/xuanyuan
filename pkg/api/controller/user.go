@@ -2,52 +2,52 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/guothion/xuanyuan/pkg/api/common/request"
+	"github.com/guothion/xuanyuan/pkg/api/common/response"
 	"github.com/guothion/xuanyuan/pkg/api/middleware"
 	"github.com/guothion/xuanyuan/pkg/common"
 	"github.com/guothion/xuanyuan/pkg/model"
-	"github.com/guothion/xuanyuan/pkg/service/userService"
-	"github.com/sirupsen/logrus"
-	"net/http"
+	"github.com/guothion/xuanyuan/pkg/service/account"
 )
 
 type UserController struct{}
 
-func (u *UserController) List(ctx *gin.Context) {
-	var (
-		context *common.Context
-		result  *model.ListUserResponse
-		err     error
-	)
+func (u *UserController) Register(c *gin.Context) {
+	var form request.Register
+	if err := c.ShouldBind(&form); err != nil {
+		response.ValidateFail(c, request.GetErrorMsg(form, err))
+		return
+	}
 
-	logrus.Println(context, result, err)
-	ctx.JSON(http.StatusOK, result)
+	if err, user := account.UserService.Register(form); err != nil {
+		response.ValidateFail(c, err.Error())
+	} else {
+		tokenData, err, _ := account.JwtService.CreateToken(account.AppGuardName, user)
+		if err != nil {
+			response.BusinessFail(c, err.Error())
+			return
+		}
+		response.Success(c, tokenData)
+	}
 }
 
-// create user api
-func (u *UserController) Create(ctx *gin.Context) {
-	var (
-		context *common.Context
-		req     model.User
-		err     error
-	)
-
-	if context, err = parseContext(ctx); err != nil {
-		middleware.RespondForbidden(ctx)
-		return
-	}
-	defer context.Cancel()
-
-	if err = ctx.ShouldBindJSON(&req); err != nil {
-		middleware.RespondBadRequest(ctx, err)
+func (u *UserController) Login(ctx *gin.Context) {
+	var form request.Login
+	if err := ctx.ShouldBind(&form); err != nil {
+		response.ValidateFail(ctx, request.GetErrorMsg(form, err))
 		return
 	}
 
-	if err = userService.UserService.Create(context, &req); err != nil {
-		middleware.RespondFailure(ctx, err)
-		return
+	if err, user := account.UserService.Login(form); err != nil {
+		response.BusinessFail(ctx, err.Error())
+	} else {
+		tokenData, err, _ := account.JwtService.CreateToken(account.AppGuardName, user)
+		if err != nil {
+			response.BusinessFail(ctx, err.Error())
+			return
+		}
+		response.Success(ctx, tokenData)
 	}
-
-	middleware.RespondCreated(ctx)
 }
 
 func (u *UserController) Update(ctx *gin.Context) {
@@ -67,7 +67,7 @@ func (u *UserController) Update(ctx *gin.Context) {
 		return
 	}
 
-	if err = userService.UserService.Update(context, &req); err != nil {
+	if err = account.UserService.Update(context, &req); err != nil {
 		middleware.RespondFailure(ctx, err)
 		return
 	}

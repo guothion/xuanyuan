@@ -9,9 +9,11 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
 	"io"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -47,6 +49,16 @@ func initMySqlGorm() *gorm.DB {
 	if db, err := gorm.Open(mysql.New(mysqlConfig), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,            // 禁用自动创建外键约束
 		Logger:                                   getGormLogger(), // 使用自定义 logger
+		NowFunc: func() time.Time {
+			return time.Now().Local()
+		},
+		DryRun: false,
+		NamingStrategy: schema.NamingStrategy{
+			TablePrefix:   "",                                // table name prefix, table for `User` would be `t_users`
+			SingularTable: false,                             // use singular table name, table for `User` would be `user` with this option enabled
+			NoLowerCase:   false,                             // skip the snake_casing of names
+			NameReplacer:  strings.NewReplacer("CID", "Cid"), // use name replacer to change struct/field name before convert it to db name
+		},
 	}); err != nil {
 		logrus.Errorf("mysql connect failed, err:", err)
 		return nil

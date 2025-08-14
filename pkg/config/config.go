@@ -12,4 +12,5 @@ type Configuration struct {
 	Log        *logConf    `yaml:"log" json:"log"`
 	App        App         `yaml:"app" json:"app"`
 	Redis      *Redis      `yaml:"redis" json:"redis"`
+	Jwt        *Jwt        `yaml:"jwt" json:"jwt"`
 }

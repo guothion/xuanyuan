@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/guothion/xuanyuan/pkg/api/middleware"
 	"github.com/guothion/xuanyuan/pkg/global"
@@ -15,8 +16,11 @@ import (
 )
 
 func setupRouter() *gin.Engine {
+	fmt.Println(global.App.Config.App.Env)
 	if global.App.Config.App.Env == "production" {
 		gin.SetMode(gin.ReleaseMode)
+	} else {
+		gin.SetMode(gin.DebugMode)
 	}
 	router := gin.New()
 	router.Use(gin.Logger(), middleware.CustomRecovery())

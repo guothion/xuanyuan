@@ -12,10 +12,10 @@ const (
 
 type User struct {
 	ID
-	Username     string  `json:"username,omitempty" bson:"username"`
-	Email        *string `json:"email,omitempty" bson:"email"`
-	PasswordHash string  `json:"password_hash,omitempty" bson:"password_hash"`
-	Role         int     `json:"role,omitempty" bson:"role"`
+	Username     string  `json:"username,omitempty" bson:"username" gorm:"size:50;not null;unique;comment:用户名"`
+	Email        *string `json:"email,omitempty" bson:"email" gorm:"size:100;not null;unique;comment:邮箱"`
+	PasswordHash string  `json:"password_hash,omitempty" bson:"password_hash" gorm:"size:255;not null;comment:密码哈希"`
+	Role         int8    `json:"role,omitempty" bson:"role" gorm:"type:tinyint;not null;default:1;comment:权限"`
 	Timestamp
 	SoftDeletes
 }

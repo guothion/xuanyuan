@@ -1,4 +1,4 @@
-package userService
+package account
 
 import "github.com/sirupsen/logrus"
 
@@ -8,4 +8,5 @@ func init() {
 
 var (
 	UserService = &userService{}
+	JwtService  = &jwtService{}
 )

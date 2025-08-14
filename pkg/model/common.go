@@ -1,16 +1,19 @@
 package model
 
-import "time"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
 type ID struct {
-	ID uint `json:"id" gorm:"primary_key"`
+	ID uint `json:"id" gorm:"primary_key;auto_increment;comment:ID"`
 }
 
 type Timestamp struct {
-	CreateAt time.Time `json:"create_at"`
-	UpdateAt time.Time `json:"update_at"`
+	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"autoUpdateTime"`
 }
 
 type SoftDeletes struct {
-	DeletedAt time.Time `json:"deleted_at" gorm:"index"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 }

@@ -34,6 +34,11 @@ log:
 redis:
   host: "localhost"
   port: 6379
-  password: 12345678
+  password: "lxnrav2"
   db: 0
 
+jwt:
+  secret: "3Bde3BGEbYqtqyEUzW3ry8jKFcaPH17fRmTmqE7MDr05Lwj95uruRKrrkb44TJ4s"
+  jwt_ttl: 43200
+  jwt_blacklist_grace_period: 10
+  refresh_grace_period: 1800

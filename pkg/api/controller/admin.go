@@ -7,10 +7,12 @@ import (
 	"os"
 )
 
-func ShowConfig(ctx *gin.Context) {
+type AdminController struct{}
+
+func (ac *AdminController) ShowConfig(ctx *gin.Context) {
 	middleware.ResponseData(ctx, global.App.Config)
 }
 
-func ShowEnvVars(ctx *gin.Context) {
+func (ac *AdminController) ShowEnvVars(ctx *gin.Context) {
 	middleware.ResponseData(ctx, os.Environ())
 }
