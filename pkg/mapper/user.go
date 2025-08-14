@@ -1,7 +1,6 @@
 package mapper
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"github.com/guothion/xuanyuan/pkg/api/common/request"
@@ -43,7 +42,7 @@ func (m *userMapper) CreateUser(ur request.Register) (err error, user model.User
 	return
 }
 
-func (m *userMapper) Update(ctx context.Context, user *model.User) (err error) {
-
-	return nil
+func (m *userMapper) GetUserInfoById(uid int) (err error, user *model.User) {
+	err = global.App.DB.Select("id", "username", "email", "role").First(&user, uid).Error
+	return
 }

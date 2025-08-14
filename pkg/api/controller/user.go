@@ -4,9 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/guothion/xuanyuan/pkg/api/common/request"
 	"github.com/guothion/xuanyuan/pkg/api/common/response"
-	"github.com/guothion/xuanyuan/pkg/api/middleware"
-	"github.com/guothion/xuanyuan/pkg/common"
-	"github.com/guothion/xuanyuan/pkg/model"
 	"github.com/guothion/xuanyuan/pkg/service/account"
 )
 
@@ -50,26 +47,11 @@ func (u *UserController) Login(ctx *gin.Context) {
 	}
 }
 
-func (u *UserController) Update(ctx *gin.Context) {
-	var (
-		context *common.Context
-		req     model.User
-		err     error
-	)
-	if context, err = parseContext(ctx); err != nil {
-		middleware.RespondForbidden(ctx)
+func (u *UserController) Info(ctx *gin.Context) {
+	err, user := account.UserService.GetUserInfo(ctx.Keys["id"].(string))
+	if err != nil {
+		response.BusinessFail(ctx, err.Error())
 		return
 	}
-	defer context.Cancel()
-
-	if err = ctx.ShouldBindJSON(&req); err != nil {
-		middleware.RespondBadRequest(ctx, err)
-		return
-	}
-
-	if err = account.UserService.Update(context, &req); err != nil {
-		middleware.RespondFailure(ctx, err)
-		return
-	}
-	middleware.RespondUpdated(ctx)
+	response.Success(ctx, user)
 }
