@@ -43,7 +43,27 @@ func (u *UserController) Login(ctx *gin.Context) {
 			response.BusinessFail(ctx, err.Error())
 			return
 		}
-		response.Success(ctx, tokenData)
+		// set authorization cookie
+		ctx.SetCookie(
+			"Authorization",
+			tokenData.AccessToken,
+			tokenData.ExpiresIn,
+			"/",
+			"localhost",
+			false,
+			true,
+		)
+		type LoginResp struct {
+			AccessToken string `json:"access_token"`
+			ExpiresIn   int    `json:"expires_in"`
+			Type        string `json:"type"`
+		}
+		resp := LoginResp{
+			AccessToken: tokenData.AccessToken,
+			ExpiresIn:   tokenData.ExpiresIn,
+			Type:        form.Type,
+		}
+		response.Success(ctx, resp)
 	}
 }
 

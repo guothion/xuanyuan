@@ -1,6 +1,8 @@
 package request
 
-import "github.com/go-playground/validator/v10"
+import (
+	"github.com/go-playground/validator/v10"
+)
 
 type Validator interface {
 	GetMessages() ValidatorMessages
@@ -24,4 +26,15 @@ func GetErrorMsg(request interface{}, err error) string {
 	}
 
 	return "Parameter error"
+}
+
+// 自定义校验
+type CustomValidator struct {
+	Validator *validator.Validate
+}
+
+// 这里我们可以写一些业务相关的自定义注册器
+func RegisterCustomValidators(v *validator.Validate) {
+	// register：根据 type 判断登录
+	v.RegisterValidation("login_type", ValidateLoginType)
 }

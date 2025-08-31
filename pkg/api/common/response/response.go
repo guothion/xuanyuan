@@ -8,9 +8,9 @@ import (
 )
 
 type Response struct {
-	ErrorCode int         `json:"error_code"`
-	Data      interface{} `json:"data"`
-	Message   string      `json:"message"`
+	Status  int         `json:"status"`
+	Data    interface{} `json:"data"`
+	Message string      `json:"message"`
 }
 
 func ServerError(c *gin.Context, err interface{}) {

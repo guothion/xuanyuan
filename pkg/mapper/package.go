@@ -1,5 +1,6 @@
 package mapper
 
 var (
-	User = &userMapper{}
+	User    = &userMapper{}
+	Recipes = &recipesMapper{}
 )

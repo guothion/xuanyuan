@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+	"github.com/guothion/xuanyuan/pkg/api/common/request"
 	"github.com/guothion/xuanyuan/pkg/util"
 	"reflect"
 	"strings"
@@ -10,6 +11,8 @@ import (
 
 func InitializeValidator() {
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		// 自定义验证器
+		request.RegisterCustomValidators(v)
 		// 注册自定义验证器
 		_ = v.RegisterValidation("mobile", util.ValidateMobile)
 

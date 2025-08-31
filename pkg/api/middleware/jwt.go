@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/guothion/xuanyuan/pkg/api/common/response"
@@ -13,13 +14,21 @@ import (
 
 func JWTAuth(GuardName string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenStr := c.Request.Header.Get("Authorization")
+		var tokenStr string
+		var err error
+		tokenStr = c.Request.Header.Get("Authorization")
+		// 先从 header 里边取
 		if tokenStr == "" {
-			response.TokenFail(c)
-			c.Abort()
-			return
+			// 如果 header 里边没有，我们从 cookie 里边取
+			if tokenStr, err = c.Cookie("Authorization"); err != nil {
+				fmt.Println(tokenStr)
+				response.TokenFail(c)
+				c.Abort()
+				return
+			}
+		} else {
+			tokenStr = tokenStr[len(account.TokenTypeBearer)+1:]
 		}
-		tokenStr = tokenStr[len(account.TokenTypeBearer)+1:]
 
 		token, err := jwt.ParseWithClaims(tokenStr, &account.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 			return []byte(global.App.Config.Jwt.Secret), nil

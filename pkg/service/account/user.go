@@ -20,9 +20,8 @@ func (us *userService) Register(params request.Register) (err error, user model.
 }
 
 func (us *userService) Login(params request.Login) (err error, user *model.User) {
-	err, user = mapper.User.GetUserInfoByEmail(params.Email)
+	err, user = mapper.User.GetUserInfo(params.Email, params.Username)
 	if err != nil {
-		err = errors.New("用户名不存在")
 		return
 	}
 	if isOk := util.BcryptMakeCheck([]byte(params.Password), user.PasswordHash); !isOk {

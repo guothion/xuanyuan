@@ -7,6 +7,7 @@ import (
 	"github.com/guothion/xuanyuan/pkg/global"
 	"github.com/guothion/xuanyuan/pkg/model"
 	"github.com/guothion/xuanyuan/pkg/util"
+	"gorm.io/gorm"
 	"strings"
 )
 
@@ -26,8 +27,18 @@ func (m *userMapper) GetUserIDByEmail(email string) (err error) {
 	return nil
 }
 
-func (m *userMapper) GetUserInfoByEmail(email string) (err error, user *model.User) {
-	err = global.App.DB.Where("email = ?", email).First(&user).Error
+func (m *userMapper) GetUserInfo(email string, username string) (err error, user *model.User) {
+	err = global.App.DB.Where("email = ?", email).
+		Or("username = ?", username).
+		First(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.New("用户不存在")
+		} else {
+			err = errors.New("查询出错")
+		}
+		return
+	}
 	return
 }
 
@@ -43,6 +54,6 @@ func (m *userMapper) CreateUser(ur request.Register) (err error, user model.User
 }
 
 func (m *userMapper) GetUserInfoById(uid int) (err error, user *model.User) {
-	err = global.App.DB.Select("id", "username", "email", "role").First(&user, uid).Error
+	err = global.App.DB.Select("id", "username", "email", "role", "created_at", "updated_at").First(&user, uid).Error
 	return
 }
