@@ -13,6 +13,13 @@ type Response struct {
 	Message string      `json:"message"`
 }
 
+type ListResponse struct {
+	Response
+	Total    int64 `json:"total"`
+	Page     int   `json:"page"`
+	PageSize int   `json:"page_size"`
+}
+
 func ServerError(c *gin.Context, err interface{}) {
 	msg := "Internal Server  Error"
 	if global.App.Config.App.Env != "production" && os.Getenv(gin.EnvGinMode) != gin.ReleaseMode {
@@ -35,6 +42,19 @@ func Success(c *gin.Context, data interface{}) {
 		"ok",
 	})
 }
+
+//func SuccessList(c *gin.Context, list interface{}, total int64, page int, pageSize int) {
+//	c.JSON(http.StatusOK, ListResponse{
+//		Response{
+//			0,
+//			list,
+//			"ok",
+//		},
+//		total,
+//		page,
+//		pageSize,
+//	})
+//}
 
 func Fail(c *gin.Context, errorCode int, msg string) {
 	c.JSON(http.StatusOK, Response{

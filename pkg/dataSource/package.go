@@ -1,5 +1,0 @@
-package dataSource
-
-func Init() {
-
-}
