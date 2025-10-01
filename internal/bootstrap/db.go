@@ -160,7 +160,14 @@ func initMySqlTables(db *gorm.DB) {
 		&model.Step{},
 		&model.Process{},
 		&model.ProcessLogs{},
-		&model.Orders{},
+		&model.StallApplication{},
+		&model.Stalls{},
+		&model.StallImages{},
+		&model.StallCategories{},
+		&model.Favorites{},
+		&model.Comments{},
+		&model.Notifications{},
+		&model.AdminLogs{},
 	)
 
 	if err != nil {

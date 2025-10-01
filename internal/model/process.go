@@ -1,5 +1,7 @@
 package model
 
+type UserId uint
+
 type Process struct {
 	ID
 	Code        ProcessCode `json:"code" gorm:"size:50;unique;comment:流程唯一编码;index:idx_code"`
