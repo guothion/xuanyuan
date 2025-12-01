@@ -4,7 +4,7 @@ import "time"
 
 type Stalls struct {
 	ID
-	UserId      uint      `json:"user_id" gorm:"comment:摊主用户ID;index:idx_user_id"`
+	UserId      UserId    `json:"user_id" gorm:"comment:摊主用户ID;index:idx_user_id"`
 	Name        string    `json:"name" gorm:"size:100;comment:摊位名称"`
 	Description string    `json:"description" gorm:"type:TEXT;comment:摊位描述"`
 	Category    string    `json:"category" gorm:"size:50;comment:分类：小吃、手作、服饰等;index:idx_category"`

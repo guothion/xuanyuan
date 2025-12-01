@@ -79,6 +79,7 @@ func initMySqlGorm() *gorm.DB {
 		},
 	}); err != nil {
 		logrus.Errorf("mysql connect failed, err:", err)
+		os.Exit(0)
 		return nil
 	} else {
 		sqlDB, _ := db.DB()
