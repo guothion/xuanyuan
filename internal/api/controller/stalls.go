@@ -50,5 +50,5 @@ func (c *StallsController) Create(ctx *gin.Context) {
 	if err = stall.StallsService.Create(_ctx, req); err != nil {
 		response.BusinessFail(ctx, err.Error())
 	}
-
+	response.Success(ctx, nil)
 }

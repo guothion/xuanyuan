@@ -13,7 +13,7 @@ type StallCreate struct {
 	CoverImage  string       `form:"cover_image" json:"cover_image" binding:"required,uri"`
 	Location    string       `form:"location" json:"location" binding:"required"`
 	Status      string       `form:"status" json:"status" binding:"required"`
-	Reason      string       `form:"reason" json:"reason" binding:""`
+	Reason      string       `form:"reason" json:"reason" binding:"required"`
 	StartTime   time.Time    `form:"start_time" json:"start_time" binding:"required"`
 	EndTime     time.Time    `form:"end_time" json:"end_time" binding:"required"`
 }
